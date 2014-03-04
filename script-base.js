@@ -88,7 +88,7 @@ Generator.prototype.addScriptToIndex = function (script) {
       file: fullPath,
       needle: '<!-- endbuild -->',
       splicable: [
-        '<script src="scripts/' + script.toLowerCase().replace('\\', '/') + '.js"></script>'
+        '<script src="scripts/' + script.toLowerCase().replace(/\\/g, '/') + '.js"></script>'
       ]
     });
   } catch (e) {
@@ -97,14 +97,27 @@ Generator.prototype.addScriptToIndex = function (script) {
 };
 
 Generator.prototype.generateSourceAndTest = function (appTemplate, testTemplate, targetDirectory, skipAdd) {
+  this.addFolder();
   // Services use classified names
   if (this.generatorName.toLowerCase() === 'service') {
     this.cameledName = this.classedName;
   }
 
-  this.appTemplate(appTemplate, path.join('scripts', targetDirectory, this.name));
-  this.testTemplate(testTemplate, path.join(targetDirectory, this.name));
+  this.appTemplate(appTemplate, path.join('scripts', this.folder, targetDirectory, this.name));
+  this.testTemplate(testTemplate, path.join(this.folder, targetDirectory, this.name));
   if (!skipAdd) {
-    this.addScriptToIndex(path.join(targetDirectory, this.name));
+    this.addScriptToIndex(path.join(this.folder, targetDirectory, this.name));
   }
+};
+
+Generator.prototype.addFolder = function () {
+  this.folder = '';
+
+  if (this.name && this.name.split('/').length > 1) {
+    this.folder = this.name.split('/')[0];
+    this.name = this.name.split('/')[1];
+  }
+
+  this.cameledName = this._.camelize(this.name);
+  this.classedName = this._.classify(this.name);
 };

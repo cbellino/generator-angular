@@ -58,10 +58,11 @@ Generator.prototype.askForNewName = function askForNewName() {
 };
 
 Generator.prototype.createDecoratorFiles = function createDecoratorFiles() {
+  this.addFolder();
   this.appTemplate('decorator', 'scripts/' + buildRelativePath(this.fileName));
   this.addScriptToIndex(buildRelativePath(this.fileName));
 };
 
 function buildRelativePath(fileName){
-  return 'decorators/' + fileName + "Decorator";
+  return 'decorators/' + fileName + "-decorator";
 }
